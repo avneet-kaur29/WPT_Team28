@@ -1,0 +1,150 @@
+function [E_P_mag] = plot_E_field(T_f_P, grid_dim_P, T_loc_P, T_p_P, phases_P,...
+              dist_P, time_P, SPACE_OR_TIME, B_or_C)
+
+%-----------------------------------------------------------------------
+% FUNCTION SUMMARY
+%-----------------------------------------------------------------------
+% DESCRIPTION:
+%-------------
+% Given the RIS dimensions and desired distance away, this function
+% generates a large surface of coordinates to serve as a surface upon
+% which to capture the reflected wave's intensity.
+%-----------------------------------------------------------------------
+% INPUTS: (NOTE: "P" appendix denotes "plot_E_field()" version of these 
+% quantities, to distinguish the local variables from the names for the
+% same quantities used in "get_E_field()", which is called by
+% this function. Those quantities are denoted with a "P" appendix in
+% "plot_E_field()".)
+%--------
+%
+% T_f_P = Transmitter frequency (in Hz)
+%
+% grid_dim = array of height x width (in # of elements) of the RIS
+% (ex. "[18 36]" for RIS w/18 rows, 36 columns of elements)
+%
+% T_loc_P = Position vector of transmitter (in spherical coordinates).
+% Coordinate system assumes RIS in XY plane w/ X axis along the RIS's 
+% horizontal, Y along its vertical, and w/positive Z axis emerging normal
+% to front of RIS.
+% (ex. "[0.3 (0) (pi/4)]" for Tx @ mid-height of the RIS, 45deg. to right
+% of normal, and 0.3 meters away from center of RIS)
+%
+% T_p_P = Input power of the transmitter (in Watts)
+% 
+% phases_P = Matrix of phase mask produced by "get_phases_v2()"
+%
+% dist_P = desired distance the user wants the surface from the RIS (m).
+%
+% time_P = For use in time-domain animations. If doing a time domain 
+% animation, change "abs()" term in last line of "get_E_field()" to 
+% "real()". If only doing phasor, space-only simulations, make sure 
+% this term is 0.
+%
+% B_or_C = Binary or continuous phase mask.
+%-----------------------------------------------------------------------
+% OUTPUT:
+%--------
+% surf = matrix of measurement location coordinates at which to calculate
+% E field intensity due to the RIS reflection, using "get_E_field()".
+
+X_OFF = 0;
+Y_OFF = 0;
+dimens = 50;
+height = 1; % in meters
+width = 1; % in meters
+E_P_mag = zeros(dimens, dimens);
+E_P_inst = zeros(dimens, dimens);
+
+corner = [height width];
+
+% Matrix of element x-coordinates
+Surf_X = ones(dimens, dimens) * (corner(1));
+
+% Matrix of element y-coordinates
+Surf_Y = ones(dimens, dimens) * (corner(2));
+
+for w = 2:dimens
+
+    % Shift each column of X to the right (looking out from RIS)
+    Surf_X(:,w) = Surf_X(:,1) - ( (w - 1) * ( (2 * width) / dimens ) );
+
+end
+
+for r = 2:dimens
+
+    % Shift each row of Y down by the length of one element
+    Surf_Y(r,:) = Surf_Y(1,:) - ( (r - 1) * ( (2 * height) / dimens) );
+
+end
+
+for h_P = 1:dimens
+    for u_P = 1:dimens
+
+        x = (Surf_X(h_P, u_P) + X_OFF);
+        y = (Surf_Y(h_P, u_P) + Y_OFF);
+        z = dist_P;
+      
+        % Measure E field there 
+        LOC_P = [x y z];
+
+        [E_P_mag(h_P,u_P), E_P_inst(h_P, u_P)] = get_E_field(T_f_P, grid_dim_P, T_loc_P, T_p_P, phases_P, LOC_P, time_P);
+
+    end
+end
+
+
+% Plot heat map of E-field distribution
+
+% Nice Colors
+
+iblue = '#648FFF';       % (lightish blue)
+ipurple = '#785EF0';     % (lightish purple/lilac)
+imagenta = '#DC267F';    % (pinkish red)
+iorange = '#FE6100';     % (lightish orange)
+igold = '#FFB000';       % (bright mustard)
+
+ib = hex2rgb(iblue);
+ip = hex2rgb(ipurple);
+im = hex2rgb(imagenta);
+io = hex2rgb(iorange);
+ig = hex2rgb(igold);
+
+% Create heatmap
+if SPACE_OR_TIME == 'S'
+    HM = heatmap(E_P_mag);
+elseif SPACE_OR_TIME == 'T'
+    HM = heatmap(E_P_inst);
+end
+
+HM.CellLabelColor = 'none';
+
+% Access the hidden color bar handle
+%hs = struct(HM);
+%cb = hs.Colorbar;
+
+% Add a label along the color bar
+%cb.Label.String = sprintf(['\\fontsize{12}','E-Field (V/m)']);
+
+plot_time = time_P * (10^12);
+
+if B_or_C == "B" || B_or_C == "b"
+    title_addendum = '(Binary Phase Mask)';
+elseif B_or_C == "C" || B_or_C == "c"
+    title_addendum = '(Continuous Phase Mask)';
+end
+
+msgP = sprintf(['\\fontsize{12}', '                 E-Field ', title_addendum, '\n', '\\fontsize{12}',  ' (', '\\color[rgb]{%f,%f,%f}' ,'%.2f', ' meters away from RIS, ', '%.2f', ' ps after t=0', '\\color{white}', ')'], ig(1), ig(2), ig(3), dist_P, plot_time);
+
+% Customize appearance
+x_values = linspace(0, 2, 50);
+y_values = linspace(0, 2, 50);
+
+HM.Title = msgP;
+HM.XLabel = sprintf(['\\fontsize{12}','Reflection Surface (X-Dir.), ', '%.1f', ' m wide'], 2*width);
+HM.YLabel = sprintf(['\\fontsize{12}','Reflection Surface (Y-Dir.), ', '%.1f', ' m tall'], 2*height);
+HM.ColorLimits = [0 2000];
+HM.Colormap = bone;       
+HM.ColorbarVisible = "on";
+HM.GridVisible = "off";
+
+end
