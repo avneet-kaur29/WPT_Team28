@@ -26,7 +26,7 @@
 % plt_y_n = "Y" to plot phase mask, "N" o.w.          %
 % B_OR_C = "B" for binary phase mask, "C" for cont.   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%test git
+
 
 
 FREQ = ( 5.6 * 10^9 );    % in Hz
