@@ -1,12 +1,34 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% OPTIONAL: If encountering crashing, %
-% use code to flush cache.            %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% OPTIONAL: Use following section to convert Cartesian %
+% coordinates to the spherical coordinates the scripts %
+% accept, or enter spherical coordinates directly      %
+% into "TRAN" and "FOC" arrays.                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% 
 
-% Flushing cache
-%clear all
+%% Convert from Cartesian to Spherical
+% %{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enter coordinates here in meters %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+x_foc = 0.875;
+y_foc = 0.0;
+z_foc = 1.820;
+
+x_tx = 0.0;
+y_tx = 0.0;
+z_tx = 2.25;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+R_FOC = sqrt((x_foc^2) + (y_foc^2) + (z_foc^2));
+PHI_FOC = atan2(y_foc, x_foc);
+THETA_FOC = atan2( (sqrt(x_foc^2 + y_foc^2)), z_foc);
+
+R_TX = sqrt((x_tx^2) + (y_tx^2) + (z_tx^2));
+PHI_TX = atan2(y_tx, x_tx);
+THETA_TX = atan2( (sqrt( x_tx^2 + y_tx^2)), z_tx);
+
+%}
 
 %% 
 
@@ -26,15 +48,15 @@
 % plt_y_n = "Y" to plot phase mask, "N" o.w.          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FREQ = ( 5.6 * 10^9 );                  % in Hz
-DIM = [18 36];                          % element # X element #
-TRAN = [0.5 ( 0 ) (pi/4)];              % (R, phi, theta)
-FOC = [3.5 ( 5*pi / 4 ) ( 1*pi / 6 )];  % (R, phi, theta)
-TX_PWR = 1;                               % in Watts (P_in)
-TIME = 0.0;                             % in seconds
-plt_y_n = "N";                          % "Y" to plot phase distribution
-SPACE_OR_TIME = "S";
-REFL_DIST = FOC(1) * cos(FOC(3));       % Reflection plane distance from RIS
+FREQ =          ( 5.8 * 10^9 );            % in Hz
+DIM =           [18 36];                   % element # X element #
+TRAN =          [R_TX PHI_TX THETA_TX];    % (R, phi, theta)
+FOC =           [R_FOC PHI_FOC THETA_FOC]; % (R, phi, theta)
+TX_PWR =        1;                         % in Watts (P_in)
+TIME =          0.0;                       % in seconds
+plt_y_n =       'N';                       % "Y" to plot phase distribution
+SPACE_OR_TIME = 'S';
+REFL_DIST =     FOC(1) * cos(FOC(3));      % Reflection plane distance from RIS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %               DO NOT MODIFY BELOW                   %

@@ -41,7 +41,8 @@ if (PLT_Y_N == 'Y' || PLT_Y_N == 'y')
     cb.Label.String = sprintf(['\\fontsize{12}','Power (dB)']);
 
 
-    msgP = sprintf(['\\fontsize{12}', 'Error b/t Continuous, Binary Phase ', '\\color[rgb]{%f,%f,%f}', '(dB)  '], ib(1), ib(2), ib(3));
+    msgP = sprintf(['\\fontsize{12}', 'Error b/t Continuous, Binary Phase ', '\\color[rgb]{%f,%f,%f}', '\n',...
+        '       (Avg. Error = ', '%.4f', ' dB)'], ib(1), ib(2), ib(3), AVG_ERR);
 
     % Customize appearance
     HM.Title = msgP;
