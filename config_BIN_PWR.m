@@ -34,9 +34,11 @@ THETA_TX = atan2( (sqrt( x_tx^2 + y_tx^2)), z_tx);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set following variables to desired values. Then,    %
-% copy/paste following section to CMD Window to prep  %
-% for "plot_E_field()", or simply run the whole file  %
-% to generate the plot as well.                       %
+% run the whole file to generate the phase mask .txt  %
+% file and a plot of the reflection as well.          %
+% If you wish to generate a plot of the phase mask,   % 
+% comment out the line with "bin_plot" and set        %
+% "plt_y_n" to 'Y' before hitting Run.                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UNITS:                                              %
 % FREQ = Hz                                           %
@@ -49,7 +51,7 @@ THETA_TX = atan2( (sqrt( x_tx^2 + y_tx^2)), z_tx);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FREQ =          ( 5.8 * 10^9 );            % in Hz
-DIM =           [18 36];                   % element # X element #
+DIM =           [28 36];                   % element # X element #
 TRAN =          [R_TX PHI_TX THETA_TX];    % (R, phi, theta)
 FOC =           [R_FOC PHI_FOC THETA_FOC]; % (R, phi, theta)
 TX_PWR =        1;                         % in Watts (P_in)
@@ -71,7 +73,7 @@ bin_plot = plot_power(FREQ, DIM, TRAN, TX_PWR, PHASE_1, (REFL_DIST), TIME, SPACE
 
 
 %% Export binary phase mask to upload to RIS
-%{
+%%{
 uC_MASK = zeros(DIM(1), DIM(2), 'int32');
 
 for m = 1:DIM(1)
